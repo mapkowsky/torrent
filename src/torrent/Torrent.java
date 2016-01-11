@@ -19,11 +19,18 @@ import java.util.prefs.Preferences;
  */
 public class Torrent {
 
+    /**
+     * TODO:
+     * - KLIENT - skanowanie portów
+     * - SERWER - multihost 
+     * - WYSTAWIENIE HTTP
+     */
     public static FormaterWyjscia fw;
     public static IniFile config;
-
+    
     public static void main(String[] args) throws IOException {
         Torrent.fw = new FormaterWyjscia();
+        Torrent.fw.run();
         Scanner scan = new Scanner(System.in);
         Torrent.config = new IniFile("/Users/macbookair/NetBeansProjects/torrent/src/torrent/konfiguracja.ini");
         fw.tytul("TORRENT");
@@ -53,6 +60,9 @@ public class Torrent {
                 case "tcppull":
                     Torrent.pobierzPlikTcp(split[1], split[2]);
                     break;
+                case "tcppush":
+                    Torrent.wystawPlikTcp(split[1], split[2]);
+                    break;
                 case "wyjdz":
                     fw.out("Wychodze...");
                     ;
@@ -66,16 +76,20 @@ public class Torrent {
     }
     
     private static void uruchomSerwerTcp(){
-        SerwerTcp s = new SerwerTcp(Torrent.config.getInt("serwer_tcp", "port", 9999));
+        SerwerTcp s = new SerwerTcp();
         s.start();
     }
     
     private static void pobierzListeTcp(String argument1){
-        KlientTcp k = new KlientTcp(Torrent.config.getInt("serwer_tcp", "port", 9999), "lista", null);
+        KlientTcp k = new KlientTcp("lista", argument1, null);
         k.start();
     }
     private static void pobierzPlikTcp(String argument1, String argument2){
-        KlientTcp k = new KlientTcp(Torrent.config.getInt("serwer_tcp", "port", 9999), "pull", argument1);
+        KlientTcp k = new KlientTcp("pull", argument1, argument2);
+        k.start();
+    }
+    private static void wystawPlikTcp(String argument1, String argument2){
+        KlientTcp k = new KlientTcp("push", argument1, argument2);
         k.start();
     }
 

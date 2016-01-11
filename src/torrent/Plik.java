@@ -1,6 +1,8 @@
 package torrent;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -21,16 +23,29 @@ public class Plik implements Serializable {
 
     private String sciezka;
 
-    private byte[] md5;
-    
-    private MessageDigest md;
+    private String sh1;
     
     public Plik(File file) {
+        ManagerPlikow mp = new ManagerPlikow();
         this.nazwa = file.getName();
         this.sciezka = file.getPath();
+        try {
+            this.sh1 = mp.sha1(new FileInputStream(file));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Plik.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Plik.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Plik.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public String toString() {
-        return sciezka;
+        return "Nazwa pliku: " + nazwa + " SHA1: "+sh1;
     }
+    
+    public String getSh1(){
+        return this.sh1;
+    }
+    
 }
